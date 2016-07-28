@@ -1,0 +1,77 @@
+package com.example.dao;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import com.example.vo.ShopsVO;
+
+public class SaveDataDao  implements SaveDataDaoInterface{
+public boolean saveShopInfo(ShopsVO shopInfo){
+	//	
+	System.out.println("Start of saving shop info for : "+ shopInfo.getShopName());
+	 StringBuffer sb = new StringBuffer();
+     BufferedReader br = null;
+     try {
+         br = new BufferedReader(new FileReader("Shops.json"));
+
+         String temp;
+         while ((temp = br.readLine()) != null)
+             sb.append(temp);
+     } catch (IOException e) {
+    	 return false;
+       
+     } finally {
+         try {
+             br.close(); // stop reading
+         } catch (IOException e) {
+             e.printStackTrace();
+             
+         }
+     }           
+     String shopsJsonString = sb.toString();
+     System.out.println("shopsJsonString"+shopsJsonString);
+     try{
+     JSONObject shopsJsonObject=new JSONObject(shopsJsonString);
+     JSONArray shopsArray=shopsJsonObject.getJSONArray("shops");
+     
+     JSONObject newShop=new JSONObject();
+     newShop.put("shopName",shopInfo.getShopName());
+     newShop.put("shopNumber",shopInfo.getShopNumber());
+     newShop.put("postalCode",shopInfo.getPostalCode());
+     newShop.put("longitude",shopInfo.getLongitude());
+     newShop.put("latitude",shopInfo.getLatitude());
+     shopsArray.put(newShop);
+     
+     /*for (int i=0;i<shopsArray.length();i++){
+    	 System.out.println( shopsArray.getJSONObject(i));
+		
+	}*/
+     BufferedWriter writer=new BufferedWriter(new FileWriter("Shops.json"));
+     writer.write(shopsJsonObject.toString());
+     
+     writer.flush();
+     writer.close();
+     }catch(Exception e){
+    	 return false;
+     }
+     
+    return true; 
+}
+
+public static void main(String args[]){
+	SaveDataDao sdao=new SaveDataDao();
+	ShopsVO shopsVO=new ShopsVO();
+	shopsVO.setLatitude("45.3434343");
+	shopsVO.setLongitude( "56.3434343");
+	shopsVO.setPostalCode("411036");
+	shopsVO.setShopName("CitadelEnclave");
+	shopsVO.setShopNumber("d3");
+	sdao.saveShopInfo(shopsVO);
+}
+}
