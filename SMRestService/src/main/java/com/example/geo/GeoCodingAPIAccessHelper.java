@@ -12,9 +12,11 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 
+import com.example.json.mappings.GeoCodingAdressComponent;
 import com.example.json.mappings.GeoCodingLongLatitudes;
 import com.example.json.mappings.GeoCodingResponse;
 import com.example.util.ApplicationConstants;
+import com.example.vo.PostalCodeResponce;
 import com.example.vo.ShopsVO;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -98,8 +100,20 @@ public class GeoCodingAPIAccessHelper {
 		return shopVo;
 	}
 	
-	public void getAddress(String longitude,String latitude){
+	public PostalCodeResponce getAddressPostalCode(String longitude,String latitude){
+		
+		PostalCodeResponce postalCodeResponse=new PostalCodeResponce();
 		System.out.println("Logitude is "+longitude +" and Latitude is : +"+latitude);
+		if (longitude==null || latitude==null ){
+			postalCodeResponse.setStatus(ApplicationConstants.GEOCODING_RES_INVALIDREQUST);
+        	postalCodeResponse.setPostalCode(null);
+		}else{
+			if ( (longitude.length()==0) || (latitude.length()==0)){
+				postalCodeResponse.setStatus(ApplicationConstants.GEOCODING_RES_INVALIDREQUST);
+            	postalCodeResponse.setPostalCode(null);
+			}
+				
+		}
 		String latlang="&latlng="+longitude+","+latitude;
 		 StringBuilder url = new StringBuilder("http");
 		  
@@ -123,7 +137,7 @@ public class GeoCodingAPIAccessHelper {
 
 		        try (CloseableHttpResponse response = httpclient.execute(request)) {
 		        	org.apache.http.HttpEntity  entity = response.getEntity();
-		            System.out.println("Responce is +"+response);
+		            //System.out.println("Responce is +"+response);
 		            // recover String response (for debug purposes)
 		            StringBuilder result = new StringBuilder();
 		            try (BufferedReader in = new BufferedReader(new InputStreamReader(entity.getContent()))) {
@@ -134,28 +148,39 @@ public class GeoCodingAPIAccessHelper {
 		                }
 		               System.out.println("Result is :"+result);
 		            }catch (Exception e) {
-						// TODO: handle exception
+		            	postalCodeResponse.setStatus(ApplicationConstants.GEOCODING_RES_UNKNOWN_ERROR);
+		            	postalCodeResponse.setPostalCode(null);
 					}
 		        
 
 		            // parse result
-		          //  ObjectMapper mapper = new ObjectMapper();
-		          //  GoogleGeoCode geocode = mapper.readValue(result.toString(), GoogleGeoCode.class);
+		            ObjectMapper mapper = new ObjectMapper();
+		            GeoCodingResponse geoCodeRes = mapper.readValue(result.toString(), GeoCodingResponse.class);
 
-		            /*if (!"OK".equals(geocode.getStatus())) {
-		                if (geocode.getError_message() != null) {
-		                    throw new Exception(geocode.getError_message());
-		                }
-		                throw new Exception("Can not find geocode for: " + address);
-		            }
-		            return geocode;*/
+		            if (!ApplicationConstants.GEOCODING_RES_OK.equals(geoCodeRes.getStatus())) {
+		            	postalCodeResponse.setStatus(geoCodeRes.getStatus());
+		            	postalCodeResponse.setPostalCode(null);
+					}
+		            
+		            GeoCodingAdressComponent addressComponents[]= geoCodeRes.getResults()[0].getAddress_components();
+		            for (GeoCodingAdressComponent geoCodingAdressComponent : addressComponents) {
+		            	if(ApplicationConstants.ADDRESSCOMPONENT_TYPE_POSTALCODE.equalsIgnoreCase(geoCodingAdressComponent.getTypes()[0])){
+		            		System.out.println("Address component type is : "+geoCodingAdressComponent.getTypes()[0]);
+		            		System.out.println(geoCodingAdressComponent.getLong_name());
+		            		postalCodeResponse.setStatus(ApplicationConstants.GEOCODING_RES_OK);
+			            	postalCodeResponse.setPostalCode(geoCodingAdressComponent.getLong_name());
+						
+		            	}
+					}
 		        }catch (Exception e) {
-					// TODO: handle exception
+		        	postalCodeResponse.setStatus(ApplicationConstants.GEOCODING_RES_UNKNOWN_ERROR);
+	            	postalCodeResponse.setPostalCode(null);
 				}
 		    }catch (Exception e) {
-				// TODO: handle exception
+		    	postalCodeResponse.setStatus(ApplicationConstants.GEOCODING_RES_UNKNOWN_ERROR);
+            	postalCodeResponse.setPostalCode(null);
 			}
-
+		    return postalCodeResponse;
 	}
 
 }

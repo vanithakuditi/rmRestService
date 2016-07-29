@@ -17,4 +17,9 @@ public class ApplicationConstants {
 	public static final String REGISTRATION_SUCCESS="Successfully saved Shop information. Thanks for Registering";
 	
 	public static final String REGISTRATION_FAILURE="Failed to Save Shop Information.Sorry for the inconvinience caused";
+	
+	
+	public static final String ADDRESSCOMPONENT_TYPE_POSTALCODE="postal_code";
+	
+	public static final String SEARCH_FAILURE="Failed to retrive Shop Information for the specified location.Sorry for the inconvinience caused";
 }
