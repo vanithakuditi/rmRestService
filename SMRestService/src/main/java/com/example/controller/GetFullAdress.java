@@ -10,6 +10,7 @@ import com.example.dao.GetShopListInterface;
 import com.example.dao.GetShopsList;
 import com.example.geo.GeoCodingAPIAccessHelper;
 import com.example.util.ApplicationConstants;
+import com.example.util.LongLatValidater;
 import com.example.vo.PostalCodeResponce;
 
 @RestController
@@ -45,6 +46,13 @@ public class GetFullAdress {
 		 	//Approch2 : Get Langitude latitude first 5 chars and compare with existing values in in json
 		 
 		 	GetShopListInterface getShopList=new GetShopsList();
+		 	if (longitude==null || latitude==null) return ApplicationConstants.SEARCH_INVALIDRANGE;
+			if (longitude.isEmpty()||latitude.isEmpty()) return ApplicationConstants.SEARCH_INVALIDRANGE;
+			if (! LongLatValidater.validateLatitude(latitude)
+					|| !LongLatValidater.validateLongitude(longitude))
+				return ApplicationConstants.SEARCH_INVALIDRANGE;
+			
+		 	
 		 	String shopsListJsonString=getShopList.getShopsList(longitude,latitude);
 		 	System.out.println("Shops list for location "+longitude+" & "+latitude +" is : "+shopsListJsonString);
 		 	if (shopsListJsonString!=null)

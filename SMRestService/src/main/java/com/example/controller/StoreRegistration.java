@@ -42,7 +42,7 @@ public class StoreRegistration {
 				 if (ApplicationConstants.GEOCODING_RES_UNKNOWN_ERROR.equalsIgnoreCase(shopFullAdress.getStatus()) ) return ApplicationConstants.APIRESPONCE_UNKNOWN_ERROR;
 			 }
 			// to do save address to in memory
-			System.out.println("Latitude "+shopFullAdress.getLatitude());
+			//System.out.println("Latitude "+shopFullAdress.getLatitude());
 		 	 SaveDataDaoInterface saveStore=new SaveDataDao();
 		 	 boolean dataSaveStatus=saveStore.saveShopInfo(shopFullAdress);
 		 	

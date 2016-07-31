@@ -68,7 +68,8 @@ public class GeoCodingAPIAccessHelper {
 	                }
 	               System.out.println("Result is :"+result);
 	            }catch (Exception e) {
-					// TODO: handle exception
+	            	shopVo.setStatus(ApplicationConstants.APIRESPONCE_UNKNOWN_ERROR);
+	            	return shopVo;
 				}
 	        
 
@@ -119,10 +120,6 @@ public class GeoCodingAPIAccessHelper {
 		  
 		    url.append("://maps.googleapis.com/maps/api/geocode/json?");
 		    url.append(latlang);
-		    //url.append("sensor=false&address=");
-		   // url.append( URLEncoder.encode(address) );
-		  
-		    // request url like: http://maps.googleapis.com/maps/api/geocode/json?address=" + URLEncoder.encode(address) + "&sensor=false"
 		    // do request
 		    try (CloseableHttpClient httpclient = HttpClients.createDefault();) {
 		        HttpGet request = new HttpGet(url.toString());

@@ -22,4 +22,5 @@ public class ApplicationConstants {
 	public static final String ADDRESSCOMPONENT_TYPE_POSTALCODE="postal_code";
 	
 	public static final String SEARCH_FAILURE="Failed to retrive Shop Information for the specified location.Sorry for the inconvinience caused";
+	public static final String SEARCH_INVALIDRANGE="Invalid Longitude LatitudeValues. Please enter vlaid values in range (-180 to 180)for longitude and (-90 to 90)for latitude";
 }

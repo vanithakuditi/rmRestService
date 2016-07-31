@@ -9,12 +9,23 @@ import java.io.IOException;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import com.example.util.LongLatValidater;
 import com.example.vo.ShopsVO;
 
 public class SaveDataDao  implements SaveDataDaoInterface{
 public boolean saveShopInfo(ShopsVO shopInfo){
-	//	
-	System.out.println("Start of saving shop info for : "+ shopInfo.getShopName());
+	//	System.out.println("Start of saving shop info for : "+ shopInfo.getShopName());
+	if (shopInfo.getLatitude()==null || shopInfo.getLongitude()==null || shopInfo.getPostalCode()==null ||
+			shopInfo.getShopName()==null || shopInfo.getShopNumber()==null)
+		return false;
+	else if (shopInfo.getLatitude().isEmpty() || shopInfo.getLongitude().isEmpty() || shopInfo.getPostalCode().isEmpty() ||
+			shopInfo.getShopName().isEmpty() || shopInfo.getShopNumber().isEmpty())
+		return false;
+	
+	if (!LongLatValidater.validateLatitude(shopInfo.getLatitude()) ||
+			!LongLatValidater.validateLongitude(shopInfo.getLongitude())	)
+			return false;
+	
 	 StringBuffer sb = new StringBuffer();
      BufferedReader br = null;
      try {
@@ -40,6 +51,19 @@ public boolean saveShopInfo(ShopsVO shopInfo){
      JSONObject shopsJsonObject=new JSONObject(shopsJsonString);
      JSONArray shopsArray=shopsJsonObject.getJSONArray("shops");
      
+     /*
+      * Condition to check if address is already exists in shops list 
+      * 
+      * as this impacts performance commenting.
+      *  This logic can be better implemented using database procedure(back end to store address info)
+      */
+   /*  for (int i=0;i<shopsArray.length();i++){
+	 	JSONObject temp= shopsArray.getJSONObject(i);
+	 	if (temp.getString("longitude").equals(shopInfo.getLongitude()) &&
+	 			temp.getString("latitude").equals(shopInfo.getLatitude()))
+	 		return false;
+	 }*/
+     
      JSONObject newShop=new JSONObject();
      newShop.put("shopName",shopInfo.getShopName());
      newShop.put("shopNumber",shopInfo.getShopNumber());
@@ -48,10 +72,7 @@ public boolean saveShopInfo(ShopsVO shopInfo){
      newShop.put("latitude",shopInfo.getLatitude());
      shopsArray.put(newShop);
      
-     /*for (int i=0;i<shopsArray.length();i++){
-    	 System.out.println( shopsArray.getJSONObject(i));
-		
-	}*/
+   
      BufferedWriter writer=new BufferedWriter(new FileWriter("Shops.json"));
      writer.write(shopsJsonObject.toString());
      

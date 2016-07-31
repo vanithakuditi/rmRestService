@@ -11,6 +11,8 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import com.example.util.LongLatValidater;
+
 public class GetShopsList implements GetShopListInterface {
 	
 	public String getShopsList(String longitude,String latitude){
@@ -21,9 +23,11 @@ public class GetShopsList implements GetShopListInterface {
 			
 			if (longitude==null || latitude==null) return null;
 			if (longitude.isEmpty()||latitude.isEmpty()) return null;
-			
-			String lngShortForm=longitude.substring(0,3);
-			String latitudeShortForm=latitude.substring(0,3);
+			if (! LongLatValidater.validateLatitude(latitude)
+					|| !LongLatValidater.validateLongitude(longitude))
+				return null;
+			String lngShortForm=longitude.substring(0,5);
+			String latitudeShortForm=latitude.substring(0,5);
 			 StringBuffer sb = new StringBuffer();
 		     BufferedReader br = null;
 		     try {
@@ -43,7 +47,8 @@ public class GetShopsList implements GetShopListInterface {
 		             e.printStackTrace();
 		             
 		         }
-		     }           
+		     }  
+		     int counter=0;
 		     String shopsJsonString = sb.toString();
 		     System.out.println("shopsJsonString"+shopsJsonString);
 		     try{
@@ -57,6 +62,7 @@ public class GetShopsList implements GetShopListInterface {
 				    	 if (tempLat.contains(latitudeShortForm)&&tempLng.contains(lngShortForm))
 				    	 {
 				    		 responceJsonArray.put(temp);
+				    		 counter++;
 				    	 }
 					  }
 				     System.out.println("Response Json is :"+responceJsonArray.toString());
@@ -64,13 +70,16 @@ public class GetShopsList implements GetShopListInterface {
 			    }catch(Exception e){
 			    	 return null;
 			    }
-    
-	     	return responceJsonArray.toString();
+		     if (counter>0)
+	     		return responceJsonArray.toString();
+		     else
+		    	 return "No Shops Found near specified location";
 		}catch(Exception e){
 			return null;
 		}
 	}
 	
+	/*
 	public String getShopsList(String zipCode){
 		//String shopsJsonArrayString="";
 		
@@ -125,11 +134,11 @@ public class GetShopsList implements GetShopListInterface {
 		}
 	}
 
-	
+*/	
 	public static void main(String[] args) {
 		GetShopsList getShopList=new GetShopsList();
-		System.out.println(getShopList.getShopsList("73.90675519999999", "18.5203044"));
-		System.out.println(getShopList.getShopsList("4110036"));
+		System.out.println(getShopList.getShopsList("9.90675519999999", "8.5203044"));
+		//System.out.println(getShopList.getShopsList("4110036"));
 	}
 
 }
