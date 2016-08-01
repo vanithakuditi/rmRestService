@@ -63,7 +63,7 @@ public class SmRestServiceApplicationTests {
 		  HttpEntity<String> httpEntity =new HttpEntity<String>(requestBody.toString(), requestHeaders);
 
 		  //Invoking the API
-		  String response=restTemplate.postForObject("http://vkuditi-8ukzx:8080/registerStore", httpEntity,String.class);
+		  String response=restTemplate.postForObject("http://localhost:8080/registerStore", httpEntity,String.class);
 		
 		  assertNotNull(response);
 		  
@@ -75,7 +75,7 @@ public class SmRestServiceApplicationTests {
 	public void testGetShopsAPI() throws JSONException{
 		 
 		  //Invoking the API
-		  String response=restTemplate.getForObject("http://vkuditi-8ukzx:8080/getStoreList?longitude=73.90675519999999&latitude=18.5203044",String.class);
+		  String response=restTemplate.getForObject("http://localhost:8080/getStoreList?longitude=73.90675519999999&latitude=18.5203044",String.class);
 		
 		  assertNotNull(response);
 		  
@@ -94,7 +94,7 @@ public class SmRestServiceApplicationTests {
 	public void testGetShopswithInvalidInputsAPI() throws JSONException{
 		 
 		  //Invoking the API
-		  String response=restTemplate.getForObject("http://vkuditi-8ukzx:8080/getStoreList?longitude=189&latitude=99",String.class);
+		  String response=restTemplate.getForObject("http://localhost:8080/getStoreList?longitude=189&latitude=99",String.class);
 		
 		  assertNotNull(response);
 		  
